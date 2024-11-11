@@ -20,6 +20,8 @@ final class MoovMoneyAPIConfig implements ConfigurationInterface
 
     private float $requestTimeout = 60;
 
+    private string $lang = 'fr';
+
     /**
      * Gets the configured username for API authentication.
      *
@@ -131,6 +133,28 @@ final class MoovMoneyAPIConfig implements ConfigurationInterface
     public function setRequestTimeout(float $requestTimeout): self
     {
         $this->requestTimeout = $requestTimeout;
+        return $this;
+    }
+
+    /**
+     * Gets the configured language for the API.
+     *
+     * @return string The language.
+     */
+    public function getLang(): string
+    {
+        return $this->lang;
+    }
+
+    /**
+     * Sets the language for the API.
+     *
+     * @param string $lang The language code (e.g., 'fr', 'en').
+     * @return self
+     */
+    public function setLang(string $lang): self
+    {
+        $this->lang = $lang;
         return $this;
     }
 
