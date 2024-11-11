@@ -5,6 +5,7 @@ namespace MoovMoney\SoapRequest;
 use Exception;
 use MoovMoney\Exceptions\ServerErrorException;
 use MoovMoney\Response\MoovMoneyApiResponse;
+use MoovMoney\i18n\LanguageManager;
 
 final class SoapResponseParser
 {
@@ -23,13 +24,15 @@ final class SoapResponseParser
             /**
              * @var array<string> $response
              */
-            $response = isset($response[0]) ? (array) $response[0] : [];
+            $response = isset ($response[0]) ? (array) $response[0] : [];
 
             return new MoovMoneyApiResponse($response);
 
         } catch (Exception $e) {
 
-            throw new ServerErrorException("Failed to read server response. Response : " . json_encode($body));
+            throw new ServerErrorException(
+                sprintf(LanguageManager::getTranslation('server.error'), json_encode($body))
+            );
         }
     }
 
@@ -50,14 +53,21 @@ final class SoapResponseParser
              * @var array<string, string> response
              */
             $response = (array) $response;
-            $faultcode = $response["faultcode"] ?? "Error";
-            $faultstring = $response["faultstring"] ?? "An error has occurred";
+            $faultcode = $response["faultcode"] ?? LanguageManager::getTranslation('error');
+            $faultstring = $response["faultstring"] ?? LanguageManager::getTranslation('error.occured');
 
-            return sprintf("[%s] : %s", $faultcode, json_encode($faultstring));
+            return LanguageManager::getTranslation('error.fault', [
+                'error' => $faultcode,
+                'fault' => json_encode($faultstring)
+            ]);
 
         } catch (Exception $e) {
 
-            throw new ServerErrorException("Failed to read server response. Response : " . json_encode($body));
+            throw new ServerErrorException(
+                LanguageManager::getTranslation('server.error', [
+                    'error' => json_encode($body)
+                ])
+            );
         }
     }
 }

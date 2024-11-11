@@ -10,6 +10,12 @@ interface ConfigurationInterface
 
     public function getBaseUrl(): string;
 
+    /**
+     * Method to get the the configured language or default one.
+     *
+     */
+    public function getLang(): string;
+
     public function getEncryptionKey(): string;
 
     public function getRequestTimeout(): float;

@@ -3,6 +3,7 @@
 namespace MoovMoney\Security;
 
 use InvalidArgumentException;
+use MoovMoney\i18n\LanguageManager;
 use MoovMoney\Interfaces\ConfigurationInterface;
 
 /**
@@ -23,6 +24,7 @@ final class Encryption
      */
     public function __construct(private ConfigurationInterface $config)
     {
+        LanguageManager::$lang = $config->getLang();
         $this->generateToken();
     }
 
@@ -38,7 +40,7 @@ final class Encryption
         $key = $this->config->getEncryptionKey();
 
         if (!$this->isKeyLengthValid($key)) {
-            throw new InvalidArgumentException("Secret key's length must be 128, 192, or 256 bits");
+            throw new InvalidArgumentException(LanguageManager::getTranslation('invalid.secret_key'));
         }
 
         $cipher = "AES-256-CBC";

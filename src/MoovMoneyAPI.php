@@ -4,6 +4,7 @@ namespace MoovMoney;
 
 use GuzzleHttp\Client;
 use MoovMoney\Exceptions\BadConfigurationException;
+use MoovMoney\i18n\LanguageManager;
 use MoovMoney\Interfaces\ConfigurationInterface;
 use MoovMoney\Response\MoovMoneyApiResponse;
 use MoovMoney\Security\Encryption;
@@ -24,18 +25,22 @@ final class MoovMoneyAPI
     private Encryption $encryption;
 
     /**
-    * Constructs the MoovMoneyAPI instance.
-    *
-    * @param ConfigurationInterface $config Configuration instance containing API credentials and other settings.
-    * @param ClientInterface|null $client Optional HTTP client, defaults to Guzzle if not provided.
-    * @throws BadConfigurationException if configuration is invalid
-    */
-    public function __construct(private ConfigurationInterface $config, private ?ClientInterface $client = null)
-    {
+     * Constructs the MoovMoneyAPI instance.
+     *
+     * @param ConfigurationInterface $config Configuration instance containing API credentials and other settings.
+     * @param ClientInterface|null $client Optional HTTP client, defaults to Guzzle if not provided.
+     * @throws BadConfigurationException if configuration is invalid
+     */
+    public function __construct(
+        private ConfigurationInterface $config,
+        private ?ClientInterface $client = null
+    ) {
+
+        LanguageManager::$lang = $config->getLang();
 
         if (!$config->isValid()) {
 
-            throw new BadConfigurationException("Check if you have provided the correct information like: username, password, baseUrl");
+            throw new BadConfigurationException(LanguageManager::getTranslation('invalid.config'));
         }
 
         $this->client = $client ?? new Client([
@@ -133,10 +138,10 @@ final class MoovMoneyAPI
     }
 
     /**
-    * Merchant transfer a funds to an account which allowed by the configurations.
-    *
-    * @return MoovMoneyApiResponse The response object containing transaction or error details.
-    */
+     * Merchant transfer a funds to an account which allowed by the configurations.
+     *
+     * @return MoovMoneyApiResponse The response object containing transaction or error details.
+     */
     public function transfertFlooz(
         string $destination,
         int $amount,
@@ -174,11 +179,11 @@ final class MoovMoneyAPI
     }
 
     /**
-    * Sends a prepared SOAP request to the Moov Money API.
-    *
-    * @param string $body The SOAP request body.
-    * @return MoovMoneyApiResponse The response object containing transaction or error details.
-    */
+     * Sends a prepared SOAP request to the Moov Money API.
+     *
+     * @param string $body The SOAP request body.
+     * @return MoovMoneyApiResponse The response object containing transaction or error details.
+     */
     private function request(string $body): MoovMoneyApiResponse
     {
         return $this->sendRequest($this->client, $body);
